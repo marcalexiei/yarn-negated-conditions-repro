@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    name: ${{ matrix.package-manager }} on ${{ matrix.os }}
+    timeout-minutes: 10
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read # required to check out the repository
+    strategy:
+      # Keep every row running: the Yarn rows are expected to fail.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, ubuntu-24.04-arm, macos-26, windows-2025]
+        package-manager: [yarn, npm]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Install and check with Yarn
+        if: matrix.package-manager == 'yarn'
+        run: |
+          corepack enable
+          yarn --version
+          yarn install
+          yarn run check
+
+      - name: Install and check with npm
+        if: matrix.package-manager == 'npm'
+        run: |
+          npm --version
+          npm install --no-audit --no-fund
+          node check.mjs

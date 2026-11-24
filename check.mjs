@@ -6,8 +6,9 @@ const EXCLUDED_CPUS = ["arm", "arm64", "riscv64", "x64"];
 
 const platform = `${process.platform}-${process.arch}`;
 
-if (!existsSync("node_modules")) {
-  console.error("No node_modules: run `yarn install` first");
+// npm creates no node_modules when it skips the only dependency.
+if (!existsSync("node_modules") && !existsSync("package-lock.json")) {
+  console.error("Nothing installed: run `yarn install` or `npm install` first");
   process.exit(2);
 }
 
