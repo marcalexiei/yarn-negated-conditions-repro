@@ -1,0 +1,11 @@
+{
+  "name": "yarn-negated-conditions-repro",
+  "private": true,
+  "packageManager": "yarn@4.19.0",
+  "scripts": {
+    "check": "node check.mjs"
+  },
+  "optionalDependencies": {
+    "sass-embedded-all-unknown": "1.108.2"
+  }
+}
